@@ -1,0 +1,10 @@
+{
+  "name": "com.tfainternal.opentoyclient",
+  "version": "0.0.1",
+  "displayName": "OpenTOY Unity Client",
+  "description": "Open source Nexon TOY Unity client",
+  "author": {
+    "name": "TF Reclaimed",
+    "url": "tfainternal.com"
+  }
+}
