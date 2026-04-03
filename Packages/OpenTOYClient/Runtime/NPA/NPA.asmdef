@@ -1,0 +1,16 @@
+{
+    "name": "NPA",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f658a2a655e014cf3a316495093dfaa5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
