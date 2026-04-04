@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using NPA.TOY;
 using NPA.TOY.Request;
-using NPA.TOY.Tools.Crypto;
 using SimpleJSON;
 using UnityEngine;
 
@@ -39,10 +39,22 @@ namespace NPA
 
         public static NPAccount Instance => Nested.instance;
 
+        private readonly ToySession _session = new();
+
         private NPAccount()
         {
             mGameObject = new GameObject(GAMEOBJECT_NAME).AddComponent<NPAccountGameObject>();
             Object.DontDestroyOnLoad(mGameObject);
+
+            ToyRequestFactory.ToyInfo = Resources.Load<ToyInfoObject>("ToyInfo");
+            if (ToyRequestFactory.ToyInfo == null)
+            {
+                Debug.LogError("[TOY] ToyInfo asset not found in Resources folder. Please create a ToyInfo asset.");
+            }
+            else
+            {
+                _session.ServiceId = ToyRequestFactory.ToyInfo.ServiceId;
+            }
         }
 
         public bool isAuthCrashError(int errorCode)
@@ -475,13 +487,7 @@ namespace NPA
 
         public void EnterToy(INPListener listener)
         {
-            var aesKey = "dd4763541be100910b568ca6d48268e3";
-            var crypto = new ToyAesCryptoNoDecrypt(ToyByteUtil.HexToBytes(aesKey));
-            var request = new ToyEnterRequest(crypto)
-            {
-                Mcc = 123,
-                Mnc = 456
-            };
+            var request = (ToyEnterRequest) ToyRequestFactory.CreateRequest(ToyRequestType.EnterToy, _session);
 
             request.SetListener(result =>
             {

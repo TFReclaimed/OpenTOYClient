@@ -8,7 +8,7 @@ namespace NPA.TOY.Request
         public int Mcc { get; set; }
         public int Mnc { get; set; }
 
-        public ToyEnterRequest(IToyCrypto crypto) : base(ToyRequestType.EnterToy, crypto)
+        public ToyEnterRequest(ToySession session, IToyCrypto crypto) : base(ToyRequestType.EnterToy, session, crypto)
         {
         }
     }

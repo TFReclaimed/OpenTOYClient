@@ -10,9 +10,11 @@ using UnityEngine.Networking;
 
 namespace NPA.TOY.Request
 {
-    internal class ToyRequest<TResult> where TResult : ToyResult
+    internal abstract class ToyRequest<TResult> : AbstractToyRequest where TResult : ToyResult
     {
         private readonly ToyRequestType _requestType;
+
+        private readonly ToySession _session;
 
         private readonly IToyCrypto _crypto;
 
@@ -20,9 +22,10 @@ namespace NPA.TOY.Request
 
         private Action<TResult> _listener;
 
-        public ToyRequest(ToyRequestType requestType, IToyCrypto crypto)
+        public ToyRequest(ToyRequestType requestType, ToySession session, IToyCrypto crypto)
         {
             _requestType = requestType;
+            _session = session;
             _crypto = crypto;
         }
 
@@ -36,12 +39,18 @@ namespace NPA.TOY.Request
             _listener = listener;
         }
 
-        public IEnumerator Execute()
+        protected virtual void OnPostExecute(TResult result)
+        {
+            _listener?.Invoke(result);
+        }
+
+        public override IEnumerator Execute()
         {
             var jsonData = JsonConvert.SerializeObject(this);
             var encryptedData = _crypto.Encrypt(Encoding.UTF8.GetBytes(jsonData));
 
-            var uwr = new UnityWebRequest("https://opentoy.tfflinternal.com/sdk/enterToy.nx", UnityWebRequest.kHttpVerbPOST);//TODO
+            var path = GetRequestPath(_requestType);
+            var uwr = new UnityWebRequest(ToyRequestFactory.ToyInfo.ToyUrl + path, UnityWebRequest.kHttpVerbPOST);
             var uploadHandler = new UploadHandlerRaw(encryptedData);
             uploadHandler.contentType = "application/x-www-form-urlencoded";
             uwr.uploadHandler = uploadHandler;
@@ -51,8 +60,8 @@ namespace NPA.TOY.Request
             {
                 { "sdkVer", ToyVersion.VERSION },
                 { "os", ToyPlatformInfo.Instance.GetOs() },
-                { "svcID", "1253" },//TODO
-                { "npToken", "" }//TODO
+                { "svcID", _session.ServiceId },
+                { "npToken", _session.NpToken }
             };
             var npParamsJson = JsonConvert.SerializeObject(npParams);
             var encryptedNpParams = ToyByteUtil.BytesToHex(_crypto.Encrypt(Encoding.UTF8.GetBytes(npParamsJson)));
@@ -61,7 +70,7 @@ namespace NPA.TOY.Request
             uwr.SetRequestHeader("acceptLanguage", "en_US");
             uwr.SetRequestHeader("acceptCountry", "US");
             uwr.SetRequestHeader("uuid", ToyPlatformInfo.Instance.GetUuid());
-            uwr.SetRequestHeader("npsn", "0");//TODO
+            uwr.SetRequestHeader("npsn", _session.Npsn.ToString());
 
             foreach (var header in _headers)
             {
@@ -75,7 +84,23 @@ namespace NPA.TOY.Request
             var jsonResponse = Encoding.UTF8.GetString(decryptedData);
             var response = JsonConvert.DeserializeObject<TResult>(jsonResponse);
 
-            _listener?.Invoke(response);
+            OnPostExecute(response);
+        }
+
+        private static string GetRequestPath(ToyRequestType requestType)
+        {
+            return requestType switch
+            {
+                ToyRequestType.GetUserInfo => "/sdk/getUserInfo.nx",
+                ToyRequestType.CheckEmailAccountRegistered => "/sdk/isRegisteredNPAA.nx",
+                ToyRequestType.EmailAccountSignUp => "/sdk/signUpNPAA.nx",
+                ToyRequestType.EmailAccountResetPassword => "/sdk/requestResetPasswordNPAA.nx",
+                ToyRequestType.GetEmailUserInfo => "/auth/me.nx",
+                ToyRequestType.EnterToy => "/sdk/enterToy.nx",
+                ToyRequestType.LoginWithEmail => "/sdk/signIn.nx",
+                ToyRequestType.LoginWithGuest => "/sdk/signIn.nx",
+                _ => throw new ArgumentOutOfRangeException(nameof(requestType), requestType, null)
+            };
         }
     }
 }
