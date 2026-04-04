@@ -1,4 +1,8 @@
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using NPA.TOY.Request;
+using NPA.TOY.Tools.Crypto;
+using SimpleJSON;
 using UnityEngine;
 
 namespace NPA
@@ -29,7 +33,7 @@ namespace NPA
 
         public string GAMEOBJECT_NAME = "NPAccount";
 
-        public GameObject mGameObject;
+        public NPAccountGameObject mGameObject;
 
         public static string serviceID;
 
@@ -37,7 +41,7 @@ namespace NPA
 
         private NPAccount()
         {
-            mGameObject = new GameObject(GAMEOBJECT_NAME, typeof(NPAccountGameObject));
+            mGameObject = new GameObject(GAMEOBJECT_NAME).AddComponent<NPAccountGameObject>();
             Object.DontDestroyOnLoad(mGameObject);
         }
 
@@ -471,7 +475,25 @@ namespace NPA
 
         public void EnterToy(INPListener listener)
         {
-            ToyDebugLog("EnterToy - unimplemented");
+            var aesKey = "dd4763541be100910b568ca6d48268e3";
+            var crypto = new ToyAesCryptoNoDecrypt(ToyByteUtil.HexToBytes(aesKey));
+            var request = new ToyEnterRequest(crypto)
+            {
+                Mcc = 123,
+                Mnc = 456
+            };
+
+            request.SetListener(result =>
+            {
+                listener.OnResult(new NPResult
+                {
+                    requestTag = NPRequestTypeTag.NPRequestTypeEnterToy,
+                    errorCode = result.errorCode,
+                    resultJson = JSONNode.Parse(JsonConvert.SerializeObject(result))
+                });
+            });
+
+            mGameObject.ExecuteRequest(request);
         }
 
         public void ShowSettlementFund(string itemName, string itemPrice, INPListener listener)
