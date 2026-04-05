@@ -119,7 +119,19 @@ namespace NPA
 
         public void GetUserInfo(INPListener listener)
         {
-            ToyDebugLog("GetUserInfo - unimplemented");
+            var request = (ToyGetUserInfoRequest) ToyRequestFactory.CreateRequest(ToyRequestType.GetUserInfo, _session);
+
+            request.SetListener(result =>
+            {
+                listener.OnResult(new NPResult
+                {
+                    requestTag = NPRequestTypeTag.NPRequestTypeGetUserInfo,
+                    errorCode = result.errorCode,
+                    resultJson = JSONNode.Parse(JsonConvert.SerializeObject(result))
+                });
+            });
+
+            mGameObject.ExecuteRequest(request);
         }
 
         public void GetFriends(int next, string filterType, INPListener listener)

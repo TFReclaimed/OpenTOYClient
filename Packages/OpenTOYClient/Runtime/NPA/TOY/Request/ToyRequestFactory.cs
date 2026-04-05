@@ -17,7 +17,7 @@ namespace NPA.TOY.Request
 
             switch (requestType)
             {
-                /*case ToyRequestType.GetUserInfo:
+                case ToyRequestType.GetUserInfo:
                     return new ToyGetUserInfoRequest(session, crypto);
 
                 case ToyRequestType.CheckEmailAccountRegistered:
@@ -30,14 +30,14 @@ namespace NPA.TOY.Request
                     return new ToyEmailAccountResetPasswordRequest(session, crypto);
 
                 case ToyRequestType.GetEmailUserInfo:
-                    return new ToyGetEmailUserInfoRequest(session, crypto);*/
+                    return new ToyGetEmailUserInfoRequest(session, crypto);
 
                 case ToyRequestType.EnterToy:
                     return new ToyEnterRequest(session, crypto);
 
-                /*case ToyRequestType.LoginWithEmail:
+                case ToyRequestType.LoginWithEmail:
                 case ToyRequestType.LoginWithGuest:
-                    return new ToyLoginRequest(session, crypto);*/
+                    return new ToyLoginRequest(requestType, session, crypto);
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(requestType), requestType, null);
