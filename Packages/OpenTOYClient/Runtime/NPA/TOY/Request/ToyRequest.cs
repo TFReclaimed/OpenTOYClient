@@ -46,7 +46,7 @@ namespace NPA.TOY.Request
 
         public override IEnumerator Execute()
         {
-            var jsonData = JsonConvert.SerializeObject(this);
+            var jsonData = JsonConvert.SerializeObject(this, ToyConstants.JsonSettings);
             var encryptedData = _crypto.Encrypt(Encoding.UTF8.GetBytes(jsonData));
 
             var path = GetRequestPath(_requestType);
@@ -63,7 +63,7 @@ namespace NPA.TOY.Request
                 { "svcID", session.ServiceId },
                 { "npToken", session.NpToken }
             };
-            var npParamsJson = JsonConvert.SerializeObject(npParams);
+            var npParamsJson = JsonConvert.SerializeObject(npParams, ToyConstants.JsonSettings);
             var encryptedNpParams = ToyByteUtil.BytesToHex(_crypto.Encrypt(Encoding.UTF8.GetBytes(npParamsJson)));
 
             uwr.SetRequestHeader("npparams", encryptedNpParams);
@@ -82,7 +82,7 @@ namespace NPA.TOY.Request
             var responseData = uwr.downloadHandler.data;
             var decryptedData = _crypto.Decrypt(responseData);
             var jsonResponse = Encoding.UTF8.GetString(decryptedData);
-            var response = JsonConvert.DeserializeObject<TResult>(jsonResponse);
+            var response = JsonConvert.DeserializeObject<TResult>(jsonResponse, ToyConstants.JsonSettings);
 
             OnPostExecute(response);
         }
