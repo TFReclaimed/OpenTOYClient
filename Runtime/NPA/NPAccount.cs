@@ -127,7 +127,7 @@ namespace NPA
                 {
                     requestTag = NPRequestTypeTag.NPRequestTypeGetUserInfo,
                     errorCode = result.errorCode,
-                    resultJson = JSONNode.Parse(JsonConvert.SerializeObject(result))
+                    resultJson = JSONNode.Parse(JsonConvert.SerializeObject(result, ToyConstants.JsonSettings))
                 });
             });
 
@@ -507,7 +507,7 @@ namespace NPA
                 {
                     requestTag = NPRequestTypeTag.NPRequestTypeEnterToy,
                     errorCode = result.errorCode,
-                    resultJson = JSONNode.Parse(JsonConvert.SerializeObject(result))
+                    resultJson = JSONNode.Parse(JsonConvert.SerializeObject(result, ToyConstants.JsonSettings))
                 });
             });
 
