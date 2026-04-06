@@ -9,5 +9,12 @@ namespace NPA.TOY.Request
             : base(ToyRequestType.GetUserInfo, session, crypto)
         {
         }
+
+        protected override void OnPostExecute(ToyGetUserInfoResult result)
+        {
+            result.Result.Npsn = session.Npsn;
+            result.Result.NpToken = session.NpToken;
+            base.OnPostExecute(result);
+        }
     }
 }
