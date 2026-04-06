@@ -10,6 +10,10 @@ namespace NPA.TOY
             ContractResolver = new DefaultContractResolver
             {
                 NamingStrategy = new CamelCaseNamingStrategy()
+            },
+            Converters =
+            {
+                new LongAsStringJsonConverter()
             }
         };
     }
