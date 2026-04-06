@@ -9,6 +9,8 @@ namespace NPA.TOY.Result
         public class ResultSet
         {
             public bool DoToast { get; set; }
+            public string NpToken { get; set; }
+            public long Npsn { get; set; }
             public ToyUserInfo NpsnUserInfo { get; set; }
         }
     }
