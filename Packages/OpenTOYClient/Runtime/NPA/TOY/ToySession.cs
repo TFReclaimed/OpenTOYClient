@@ -10,7 +10,7 @@ namespace NPA.TOY
             get => _npsn;
             set
             {
-                PlayerPrefs.SetInt("ToyNpsn", (int) value);
+                PlayerPrefs.SetString("ToyNpsn", value.ToString());
                 _npsn = value;
             }
         }
@@ -36,7 +36,7 @@ namespace NPA.TOY
 
         public ToySession()
         {
-            Npsn = PlayerPrefs.GetInt("ToyNpsn", 0);
+            Npsn = long.TryParse(PlayerPrefs.GetString("ToyNpsn", "0"), out var npsn) ? npsn : 0;
             NpToken = PlayerPrefs.GetString("ToyNpToken", string.Empty);
         }
     }
