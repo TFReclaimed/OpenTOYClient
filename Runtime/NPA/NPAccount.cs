@@ -626,6 +626,17 @@ namespace NPA
             {
                 if (result.errorCode == 0)
                 {
+                    if (session.Npsn != 0 && session.NpToken != string.Empty)
+                    {
+                        listener.OnResult(new NPResult
+                        {
+                            requestTag = NPRequestTypeTag.NPRequestTypeEnterToy,
+                            errorCode = 0,
+                            resultJson = JSONNode.Parse(JsonConvert.SerializeObject(result, ToyConstants.JsonSettings))
+                        });
+                        return;
+                    }
+
                     Login(new RequestTagOverrideListener(listener, NPRequestTypeTag.NPRequestTypeEnterToy));
                     return;
                 }
