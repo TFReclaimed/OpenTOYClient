@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace NPA.TOY
@@ -24,7 +25,11 @@ namespace NPA.TOY
             }
         }
 
+        public string Email { get; set; }
+
         public string ServiceId { get; set; }
+
+        public List<int> AvailableMemberships { get; set; } = new();
 
         private long _npsn;
         private string _npToken;

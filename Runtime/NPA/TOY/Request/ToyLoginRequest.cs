@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using NPA.TOY.Result;
 using NPA.TOY.Tools.Crypto;
+using NPA.TOY.Tools.PlatformInfo;
 
 namespace NPA.TOY.Request
 {
@@ -9,12 +10,24 @@ namespace NPA.TOY.Request
         public string Uuid2 { get; set; }
         public string UserId { get; set; }
         public string Passwd { get; set; }
+        public int MemType { get; set; }
         [JsonProperty("optional")]
         public DeviceInfo Device { get; set; }
 
         public ToyLoginRequest(ToyRequestType requestType, ToySession session, IToyCrypto crypto)
             : base(requestType, session, crypto)
         {
+        }
+
+        protected override bool OnPreExecute()
+        {
+            Uuid2 = ToyPlatformInfo.Instance.GetUuid2();
+            Device = new DeviceInfo
+            {
+                Device = ToyPlatformInfo.Instance.GetModel()
+            };
+
+            return true;
         }
 
         protected override void OnPostExecute(ToyLoginResult result)
