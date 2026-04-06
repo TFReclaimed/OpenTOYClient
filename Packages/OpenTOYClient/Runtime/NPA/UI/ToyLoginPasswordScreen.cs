@@ -50,16 +50,16 @@ namespace NPA.UI
 
         private void OnResponse(ToyLoginResult result)
         {
-            toyUi.ShowLoading(false);
-
             if (result.errorCode != 0)
             {
+                toyUi.ShowLoading(false);
                 errorText.text = result.errorText;
                 errorText.gameObject.SetActive(true);
                 return;
             }
 
-            //TODO
+            NPAccount.Instance.NotifyLoginResult(result);
+            NPAccount.Instance.CloseUi();
         }
     }
 }
