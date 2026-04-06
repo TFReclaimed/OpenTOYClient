@@ -6,6 +6,8 @@ using UnityEngine;
 public class NPAUnitySDKDemo : MonoBehaviour, INPListener, INPRecvNotificationListener, INPGCMListener,
     INPBannerListener, INPEndingBannerListener, INPOnCloseListener, INPPlateListener, INPRuntimePermissionListener
 {
+    public bool guiEnabled = true;
+
     public string SENDER_ID = "660640960303";
 
     private string _msg;
@@ -48,6 +50,11 @@ public class NPAUnitySDKDemo : MonoBehaviour, INPListener, INPRecvNotificationLi
 
     private void OnGUI()
     {
+        if (!guiEnabled)
+        {
+            return;
+        }
+
         var position = new Rect(Screen.width * 0f, Screen.height * 0f, Screen.width * 0.6f,
             Screen.height * 0.4f);
         GUI.TextArea(position, _msg);

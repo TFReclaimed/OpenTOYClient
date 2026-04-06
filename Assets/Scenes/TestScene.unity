@@ -352,6 +352,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18d4349c8992aa64a9e5bf947a239446, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  guiEnabled: 1
   SENDER_ID: 660640960303
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
