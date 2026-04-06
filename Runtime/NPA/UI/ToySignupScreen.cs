@@ -51,6 +51,7 @@ namespace NPA.UI
                 return;
             }
 
+            NPAccount.Instance.NotifyLoginResult(result);
             NPAccount.Instance.CloseUi();
         }
     }
