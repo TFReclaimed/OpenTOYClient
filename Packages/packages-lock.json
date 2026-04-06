@@ -5,7 +5,8 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.unity.nuget.newtonsoft-json": "3.2.2"
+        "com.unity.nuget.newtonsoft-json": "3.2.2",
+        "com.unity.ugui": "1.0.0"
       }
     },
     "com.unity.ext.nunit": {
@@ -56,6 +57,15 @@
         "com.unity.sysroot.linux-x86_64": "2.0.9"
       },
       "url": "https://packages.unity.com"
+    },
+    "com.unity.ugui": {
+      "version": "1.0.0",
+      "depth": 1,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.modules.ui": "1.0.0",
+        "com.unity.modules.imgui": "1.0.0"
+      }
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",

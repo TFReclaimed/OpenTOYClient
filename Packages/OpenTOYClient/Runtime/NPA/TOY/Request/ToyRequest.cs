@@ -39,6 +39,11 @@ namespace NPA.TOY.Request
             _listener = listener;
         }
 
+        protected virtual bool OnPreExecute()
+        {
+            return true;
+        }
+
         protected virtual void OnPostExecute(TResult result)
         {
             _listener?.Invoke(result);
@@ -46,6 +51,11 @@ namespace NPA.TOY.Request
 
         public override IEnumerator Execute()
         {
+            if (!OnPreExecute())
+            {
+                yield break;
+            }
+
             var jsonData = JsonConvert.SerializeObject(this, ToyConstants.JsonSettings);
             var encryptedData = _crypto.Encrypt(Encoding.UTF8.GetBytes(jsonData));
 

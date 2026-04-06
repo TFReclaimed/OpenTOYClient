@@ -11,5 +11,15 @@ namespace NPA.TOY.Request
         public ToyEnterRequest(ToySession session, IToyCrypto crypto) : base(ToyRequestType.EnterToy, session, crypto)
         {
         }
+
+        protected override void OnPostExecute(ToyEnterResult result)
+        {
+            if (result.errorCode == 0)
+            {
+                session.AvailableMemberships = result.Result.Service.UseMemberships;
+            }
+
+            base.OnPostExecute(result);
+        }
     }
 }

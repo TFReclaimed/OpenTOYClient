@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using NPA.TOY;
 using NPA.TOY.Request;
+using NPA.UI;
 using SimpleJSON;
 using UnityEngine;
 
@@ -39,7 +40,9 @@ namespace NPA
 
         public static NPAccount Instance => Nested.instance;
 
-        private readonly ToySession _session = new();
+        internal readonly ToySession session = new();
+
+        private ToyUi _toyUiRoot;
 
         private NPAccount()
         {
@@ -53,7 +56,34 @@ namespace NPA
             }
             else
             {
-                _session.ServiceId = ToyRequestFactory.ToyInfo.ServiceId;
+                session.ServiceId = ToyRequestFactory.ToyInfo.ServiceId;
+            }
+        }
+
+        private void OpenUi(ToyScreen screen)
+        {
+            var toyUi = Resources.Load<ToyUi>("TOY UI");
+            if (toyUi == null)
+            {
+                Debug.LogError("[TOY] Toy UI prefab not found in Resources folder!");
+                return;
+            }
+
+            if (_toyUiRoot == null)
+            {
+                _toyUiRoot = Object.Instantiate(toyUi);
+                Object.DontDestroyOnLoad(_toyUiRoot);
+            }
+
+            _toyUiRoot.SetScreen(screen);
+        }
+
+        internal void CloseUi()
+        {
+            if (_toyUiRoot != null)
+            {
+                Object.Destroy(_toyUiRoot.gameObject);
+                _toyUiRoot = null;
             }
         }
 
@@ -89,12 +119,51 @@ namespace NPA
 
         public void Login(INPListener listener)
         {
-            ToyDebugLog("Login - unimplemented");
+            if (session.AvailableMemberships.Contains((int) NPLoginType.NPLoginTypeGuest))
+            {
+                Login(NPLoginType.NPLoginTypeGuest, listener);
+            }
+            else
+            {
+                Login(NPLoginType.NPLoginTypeEmail, listener);
+            }
         }
 
         public void Login(NPLoginType loginType, INPListener listener)
         {
-            ToyDebugLog("Login - unimplemented");
+            if (!session.AvailableMemberships.Contains((int) loginType))
+            {
+                listener.OnResult(new NPResult
+                {
+                    requestTag = NPRequestTypeTag.NPRequestTypeLogin,
+                    errorCode = -1,
+                    resultJson = JSONNode.Parse("{\"errorCode\":-1}")
+                });
+
+                return;
+            }
+
+            if (loginType != NPLoginType.NPLoginTypeGuest)
+            {
+                // TODO: callback
+                OpenUi(ToyScreen.Login);
+                return;
+            }
+
+            var request = (ToyLoginRequest) ToyRequestFactory.CreateRequest(ToyRequestType.LoginWithGuest, session);
+            request.MemType = (int) loginType;
+
+            request.SetListener(result =>
+            {
+                listener.OnResult(new NPResult
+                {
+                    requestTag = NPRequestTypeTag.NPRequestTypeLogin,
+                    errorCode = result.errorCode,
+                    resultJson = JSONNode.Parse(JsonConvert.SerializeObject(result, ToyConstants.JsonSettings))
+                });
+            });
+
+            mGameObject.ExecuteRequest(request);
         }
 
         public void LoginForKakao(string kakaoID, string accessToken, INPListener listener)
@@ -119,7 +188,7 @@ namespace NPA
 
         public void GetUserInfo(INPListener listener)
         {
-            var request = (ToyGetUserInfoRequest) ToyRequestFactory.CreateRequest(ToyRequestType.GetUserInfo, _session);
+            var request = (ToyGetUserInfoRequest) ToyRequestFactory.CreateRequest(ToyRequestType.GetUserInfo, session);
 
             request.SetListener(result =>
             {
@@ -499,7 +568,7 @@ namespace NPA
 
         public void EnterToy(INPListener listener)
         {
-            var request = (ToyEnterRequest) ToyRequestFactory.CreateRequest(ToyRequestType.EnterToy, _session);
+            var request = (ToyEnterRequest) ToyRequestFactory.CreateRequest(ToyRequestType.EnterToy, session);
 
             request.SetListener(result =>
             {
