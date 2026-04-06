@@ -21,6 +21,29 @@ namespace NPA
             }
         }
 
+        private class RequestTagOverrideListener : INPListener
+        {
+            private readonly INPListener _listener;
+
+            private readonly NPRequestTypeTag _requestTag;
+
+            public RequestTagOverrideListener(INPListener listener, NPRequestTypeTag requestTag)
+            {
+                _listener = listener;
+                _requestTag = requestTag;
+            }
+
+            public void OnResult(NPResult npResult)
+            {
+                _listener?.OnResult(new NPResult
+                {
+                    requestTag = _requestTag,
+                    errorCode = npResult.errorCode,
+                    resultJson = npResult.resultJson
+                });
+            }
+        }
+
         public static string FRIEND_FILTER_TYPE_FRIENDS = "friends";
 
         public static string FRIEND_FILTER_TYPE_INVITES = "invites";
@@ -601,6 +624,12 @@ namespace NPA
 
             request.SetListener(result =>
             {
+                if (result.errorCode == 0)
+                {
+                    Login(new RequestTagOverrideListener(listener, NPRequestTypeTag.NPRequestTypeEnterToy));
+                    return;
+                }
+
                 listener.OnResult(new NPResult
                 {
                     requestTag = NPRequestTypeTag.NPRequestTypeEnterToy,
