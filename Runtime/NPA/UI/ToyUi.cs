@@ -93,6 +93,7 @@ namespace NPA.UI
         public void OnCloseClicked()
         {
             _currentScreen = ToyScreen.None;
+            NPAccount.Instance.NotifyLoginCanceled();
             NPAccount.Instance.CloseUi();
         }
     }

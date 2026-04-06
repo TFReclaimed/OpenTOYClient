@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using NPA.TOY;
 using NPA.TOY.Request;
+using NPA.TOY.Result;
 using NPA.UI;
 using SimpleJSON;
 using UnityEngine;
@@ -43,6 +44,8 @@ namespace NPA
         internal readonly ToySession session = new();
 
         private ToyUi _toyUiRoot;
+
+        private INPListener _pendingLoginListener;
 
         private NPAccount()
         {
@@ -145,7 +148,7 @@ namespace NPA
 
             if (loginType != NPLoginType.NPLoginTypeGuest)
             {
-                // TODO: callback
+                _pendingLoginListener = listener;
                 OpenUi(ToyScreen.Login);
                 return;
             }
@@ -164,6 +167,32 @@ namespace NPA
             });
 
             mGameObject.ExecuteRequest(request);
+        }
+
+        internal void NotifyLoginResult(ToyLoginResult result)
+        {
+            var listener = _pendingLoginListener;
+            _pendingLoginListener = null;
+
+            listener?.OnResult(new NPResult
+            {
+                requestTag = NPRequestTypeTag.NPRequestTypeLogin,
+                errorCode = result.errorCode,
+                resultJson = JSONNode.Parse(JsonConvert.SerializeObject(result, ToyConstants.JsonSettings))
+            });
+        }
+
+        internal void NotifyLoginCanceled()
+        {
+            var listener = _pendingLoginListener;
+            _pendingLoginListener = null;
+
+            listener?.OnResult(new NPResult
+            {
+                requestTag = NPRequestTypeTag.NPRequestTypeLogin,
+                errorCode = -1,
+                resultJson = JSONNode.Parse("{\"errorCode\":-1}")
+            });
         }
 
         public void LoginForKakao(string kakaoID, string accessToken, INPListener listener)
