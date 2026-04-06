@@ -1,12 +1,20 @@
 {
   "dependencies": {
+    "com.gilzoide.safe-area-layout": {
+      "version": "1.1.2",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://package.openupm.com"
+    },
     "com.tfainternal.opentoyclient": {
       "version": "file:OpenTOYClient",
       "depth": 0,
       "source": "embedded",
       "dependencies": {
         "com.unity.nuget.newtonsoft-json": "3.2.2",
-        "com.unity.ugui": "1.0.0"
+        "com.unity.ugui": "1.0.0",
+        "com.gilzoide.safe-area-layout": "1.1.2"
       }
     },
     "com.unity.ext.nunit": {
