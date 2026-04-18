@@ -235,7 +235,7 @@ namespace NPA
 
         public void Logout(INPListener listener)
         {
-            ToyDebugLog("Logout - unimplemented");
+            EndSession();
         }
 
         public void GetUserInfo(INPListener listener)
