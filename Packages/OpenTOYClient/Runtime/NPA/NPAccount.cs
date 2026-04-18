@@ -4,6 +4,7 @@ using NPA.TOY;
 using NPA.TOY.Request;
 using NPA.TOY.Result;
 using NPA.UI;
+using NPA.UI.Toast;
 using SimpleJSON;
 using UnityEngine;
 
@@ -187,6 +188,11 @@ namespace NPA
                     errorCode = result.errorCode,
                     resultJson = JSONNode.Parse(JsonConvert.SerializeObject(result, ToyConstants.JsonSettings))
                 });
+
+                if (result.errorCode == 0)
+                {
+                    ToastManager.ShowToast("Logged in as guest");
+                }
             });
 
             mGameObject.ExecuteRequest(request);
@@ -203,6 +209,18 @@ namespace NPA
                 errorCode = result.errorCode,
                 resultJson = JSONNode.Parse(JsonConvert.SerializeObject(result, ToyConstants.JsonSettings))
             });
+
+            if (result.errorCode == 0)
+            {
+                if (session.Email == string.Empty)
+                {
+                    ToastManager.ShowToast("Logged in as guest");
+                }
+                else
+                {
+                    ToastManager.ShowToast($"Logged in as {session.Email}");
+                }
+            }
         }
 
         internal void NotifyLoginCanceled()
@@ -396,6 +414,7 @@ namespace NPA
         public void EndSession()
         {
             session.Logout();
+            ToastManager.ShowToast("Logged out");
         }
 
         public void setCountry(NPCountry country)
@@ -628,6 +647,7 @@ namespace NPA
                 {
                     if (session.Npsn != 0 && session.NpToken != string.Empty)
                     {
+                        // TODO: try to get email user info, show welcome back toast
                         listener.OnResult(new NPResult
                         {
                             requestTag = NPRequestTypeTag.NPRequestTypeEnterToy,
