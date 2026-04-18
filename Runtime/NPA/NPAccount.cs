@@ -395,7 +395,7 @@ namespace NPA
 
         public void EndSession()
         {
-            ToyDebugLog("EndSession - unimplemented");
+            session.Logout();
         }
 
         public void setCountry(NPCountry country)

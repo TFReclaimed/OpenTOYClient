@@ -39,5 +39,13 @@ namespace NPA.TOY
             Npsn = long.TryParse(PlayerPrefs.GetString("ToyNpsn", "0"), out var npsn) ? npsn : 0;
             NpToken = PlayerPrefs.GetString("ToyNpToken", string.Empty);
         }
+
+        public void Logout()
+        {
+            Npsn = 0;
+            NpToken = string.Empty;
+            Email = string.Empty;
+            PlayerPrefs.Save();
+        }
     }
 }
